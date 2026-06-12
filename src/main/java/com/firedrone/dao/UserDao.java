@@ -36,7 +36,8 @@ public class UserDao {
             boolean needsMigration = false;
 
             if (storedPassword != null && storedPassword.startsWith("$2")) {
-                BCrypt.Result result = VERIFYER.verify(password.toCharArray(), storedPassword);
+                BCrypt.Result result = VERIFYER.verify(
+                        password.toCharArray(), storedPassword);
                 matched = result.verified;
             } else {
                 if (password.equals(storedPassword)) {
@@ -60,7 +61,7 @@ public class UserDao {
             return user;
 
         } catch (Exception e) {
-            throw new RuntimeException("µ«¬º≤È—Ø ß∞‹", e);
+            throw new RuntimeException("ÁôªÂΩïÊü•ËØ¢Â§±Ë¥•", e);
         }
     }
 
@@ -72,7 +73,7 @@ public class UserDao {
             ps.setInt(2, userId);
             ps.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("√‹¬Î«®“∆ ß∞‹", e);
+            throw new RuntimeException("ÂØÜÁ†ÅËøÅÁßªÂ§±Ë¥•", e);
         }
     }
 }

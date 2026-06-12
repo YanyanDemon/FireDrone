@@ -1,7 +1,6 @@
 package com.firedrone.controller;
 
 import com.firedrone.dao.AlarmDao;
-import com.firedrone.model.Alarm;
 import com.firedrone.service.DispatchService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -42,9 +41,9 @@ public class AlarmServlet extends HttpServlet {
         boolean success = dispatchService.dispatchMask(alarmId, targetArea, maskCount);
 
         if (!success) {
-            request.getSession().setAttribute("msg", "ÔİÎŞ¿ÉÓÃµÄÎŞÈË»ú£¬ÈÎÎñÅÉ·¢Ê§°Ü");
+            request.getSession().setAttribute("msg", "æš‚æ— å¯ç”¨çš„æ— äººæœºï¼Œä»»åŠ¡æ´¾å‘å¤±è´¥");
         } else {
-            request.getSession().setAttribute("msg", "ÎŞÈË»úÅäËÍÈÎÎñÒÑÉú³É");
+            request.getSession().setAttribute("msg", "æ— äººæœºé…é€ä»»åŠ¡å·²ç”Ÿæˆ");
         }
 
         response.sendRedirect("alarm");

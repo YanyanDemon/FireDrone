@@ -51,21 +51,26 @@ public class MonitorServlet extends HttpServlet {
                 point.getFlame()
         );
 
+        boolean committed = false;
         try {
             DBUtil.beginTransaction();
 
             monitorDao.updateRiskLevel(id, risk);
 
-            if ("Î£ÏÕ".equals(risk) || "½ô¼±".equals(risk)) {
+            if ("å±é™©".equals(risk) || "ç´§æ€¥".equals(risk)) {
                 String content = point.getArea() + " " + point.getName()
-                        + " ³öÏÖ»ğÇé·çÏÕ£¬µ±Ç°µÈ¼¶£º" + risk;
+                        + " å‡ºç°ç«æƒ…é£é™©ï¼Œå½“å‰ç­‰çº§ï¼š" + risk;
                 alarmDao.addAlarm(id, risk, content);
             }
 
             DBUtil.commitTransaction();
+            committed = true;
         } catch (Exception e) {
-            DBUtil.rollbackTransaction();
-            throw new RuntimeException("¼à¿ØÆÀ¹ÀÊ§°Ü", e);
+            throw new RuntimeException("ç›‘æ§è¯„ä¼°å¤±è´¥", e);
+        } finally {
+            if (!committed) {
+                DBUtil.rollbackTransaction();
+            }
         }
 
         response.sendRedirect("monitor");

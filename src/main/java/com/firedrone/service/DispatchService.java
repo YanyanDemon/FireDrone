@@ -11,25 +11,29 @@ public class DispatchService {
     private final DeliveryDao deliveryDao = new DeliveryDao();
 
     public boolean dispatchMask(int alarmId, String targetArea, int maskCount) {
+        boolean committed = false;
         try {
             DBUtil.beginTransaction();
 
             Drone drone = droneDao.findBestDrone(targetArea, maskCount);
 
             if (drone == null) {
-                DBUtil.rollbackTransaction();
                 return false;
             }
 
             deliveryDao.addTask(alarmId, drone.getId(), targetArea, maskCount);
-            droneDao.updateStatus(drone.getId(), "Ö´ÐÐÈÎÎñÖÐ");
+            droneDao.updateStatus(drone.getId(), "æ‰§è¡Œä»»åŠ¡ä¸­");
 
             DBUtil.commitTransaction();
+            committed = true;
             return true;
 
         } catch (Exception e) {
-            DBUtil.rollbackTransaction();
-            throw new RuntimeException("ÎÞÈË»úµ÷¶ÈÊ§°Ü", e);
+            throw new RuntimeException("æ— äººæœºè°ƒåº¦å¤±è´¥", e);
+        } finally {
+            if (!committed) {
+                DBUtil.rollbackTransaction();
+            }
         }
     }
 }

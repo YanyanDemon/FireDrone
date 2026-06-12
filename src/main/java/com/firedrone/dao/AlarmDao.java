@@ -45,14 +45,15 @@ public class AlarmDao {
                 list.add(alarm);
             }
         } catch (Exception e) {
-            logger.error("²éÑ¯¸æ¾¯Ê§°Ü", e);
+            logger.error("æŸ¥è¯¢å‘Šè­¦å¤±è´¥", e);
         }
 
         return list;
     }
 
     public int addAlarm(int monitorId, String level, String content) {
-        String sql = "INSERT INTO alarm(monitor_id, level, content, status, create_time) VALUES (?, ?, ?, 'Î´´¦Àí', NOW())";
+        String sql = "INSERT INTO alarm(monitor_id, level, content, status, create_time) "
+                + "VALUES (?, ?, ?, 'æœªå¤„ç†', NOW())";
 
         try (
                 Connection connection = DBUtil.getConnection();
@@ -69,7 +70,7 @@ public class AlarmDao {
             }
 
         } catch (Exception e) {
-            logger.error("´´½¨¸æ¾¯Ê§°Ü", e);
+            logger.error("åˆ›å»ºå‘Šè­¦å¤±è´¥", e);
         }
 
         return -1;
@@ -107,7 +108,7 @@ public class AlarmDao {
                 return alarm;
             }
         } catch (Exception e) {
-            logger.error("²éÑ¯¸æ¾¯Ê§°Ü", e);
+            logger.error("æŸ¥è¯¢å‘Šè­¦å¤±è´¥", e);
         }
 
         return null;
@@ -125,7 +126,7 @@ public class AlarmDao {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            logger.error("Í³¼Æ¸æ¾¯Ê§°Ü", e);
+            logger.error("ç»Ÿè®¡å‘Šè­¦å¤±è´¥", e);
         }
 
         return 0;

@@ -24,17 +24,14 @@
             <div>监测点数量</div>
             <div class="num">${monitorCount}</div>
         </div>
-
         <div class="card">
             <div>告警数量</div>
             <div class="num">${alarmCount}</div>
         </div>
-
         <div class="card">
             <div>无人机数量</div>
             <div class="num">${droneCount}</div>
         </div>
-
         <div class="card">
             <div>配送任务</div>
             <div class="num">${taskCount}</div>

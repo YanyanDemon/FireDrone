@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,25 +27,10 @@ public class MonitorDao {
                 ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()) {
-                MonitorPoint point = new MonitorPoint();
-                point.setId(rs.getInt("id"));
-                point.setName(rs.getString("name"));
-                point.setArea(rs.getString("area"));
-                point.setTemperature(rs.getDouble("temperature"));
-                point.setSmoke(rs.getDouble("smoke"));
-                point.setCo(rs.getDouble("co"));
-                point.setFlame(rs.getInt("flame"));
-                point.setRiskLevel(rs.getString("risk_level"));
-
-                Timestamp ts = rs.getTimestamp("update_time");
-                if (ts != null) {
-                    point.setUpdateTime(ts.toLocalDateTime());
-                }
-
-                list.add(point);
+                list.add(mapRow(rs));
             }
         } catch (Exception e) {
-            logger.error("²éÑ¯¼à¿ØµãÊ§°Ü", e);
+            logger.error("æŸ¥è¯¢ç›‘æŽ§ç‚¹å¤±è´¥", e);
         }
 
         return list;
@@ -61,28 +47,32 @@ public class MonitorDao {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                MonitorPoint point = new MonitorPoint();
-                point.setId(rs.getInt("id"));
-                point.setName(rs.getString("name"));
-                point.setArea(rs.getString("area"));
-                point.setTemperature(rs.getDouble("temperature"));
-                point.setSmoke(rs.getDouble("smoke"));
-                point.setCo(rs.getDouble("co"));
-                point.setFlame(rs.getInt("flame"));
-                point.setRiskLevel(rs.getString("risk_level"));
-
-                Timestamp ts = rs.getTimestamp("update_time");
-                if (ts != null) {
-                    point.setUpdateTime(ts.toLocalDateTime());
-                }
-
-                return point;
+                return mapRow(rs);
             }
         } catch (Exception e) {
-            logger.error("²éÑ¯¼à¿ØµãÊ§°Ü", e);
+            logger.error("æŸ¥è¯¢ç›‘æŽ§ç‚¹å¤±è´¥", e);
         }
 
         return null;
+    }
+
+    private MonitorPoint mapRow(ResultSet rs) throws SQLException {
+        MonitorPoint point = new MonitorPoint();
+        point.setId(rs.getInt("id"));
+        point.setName(rs.getString("name"));
+        point.setArea(rs.getString("area"));
+        point.setTemperature(rs.getDouble("temperature"));
+        point.setSmoke(rs.getDouble("smoke"));
+        point.setCo(rs.getDouble("co"));
+        point.setFlame(rs.getInt("flame"));
+        point.setRiskLevel(rs.getString("risk_level"));
+
+        Timestamp ts = rs.getTimestamp("update_time");
+        if (ts != null) {
+            point.setUpdateTime(ts.toLocalDateTime());
+        }
+
+        return point;
     }
 
     public void updateRiskLevel(int id, String riskLevel) {
@@ -96,7 +86,7 @@ public class MonitorDao {
             ps.setInt(2, id);
             ps.executeUpdate();
         } catch (Exception e) {
-            logger.error("¸üÐÂ·çÏÕµÈ¼¶Ê§°Ü", e);
+            logger.error("æ›´æ–°é£Žé™©ç­‰çº§å¤±è´¥", e);
         }
     }
 
@@ -112,7 +102,7 @@ public class MonitorDao {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            logger.error("Í³¼Æ¼à¿ØµãÊ§°Ü", e);
+            logger.error("ç»Ÿè®¡ç›‘æŽ§ç‚¹å¤±è´¥", e);
         }
 
         return 0;

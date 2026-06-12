@@ -54,7 +54,7 @@ public class DeliveryDao {
                 list.add(task);
             }
         } catch (Exception e) {
-            logger.error("²éÑ¯ÅäËÍÈÎÎñÊ§°Ü", e);
+            logger.error("æŸ¥è¯¢é…é€ä»»åŠ¡å¤±è´¥", e);
         }
 
         return list;
@@ -63,7 +63,7 @@ public class DeliveryDao {
     public void addTask(int alarmId, int droneId, String targetArea, int maskCount) {
         String sql = """
                 INSERT INTO delivery_task(alarm_id, drone_id, target_area, mask_count, status, create_time)
-                VALUES (?, ?, ?, ?, 'ÅäËÍÖĞ', NOW())
+                VALUES (?, ?, ?, ?, 'é…é€ä¸­', NOW())
                 """;
 
         try (
@@ -76,12 +76,12 @@ public class DeliveryDao {
             ps.setInt(4, maskCount);
             ps.executeUpdate();
         } catch (Exception e) {
-            logger.error("´´½¨ÅäËÍÈÎÎñÊ§°Ü", e);
+            logger.error("åˆ›å»ºé…é€ä»»åŠ¡å¤±è´¥", e);
         }
     }
 
     public void finishTask(int taskId) {
-        String sql = "UPDATE delivery_task SET status = 'ÒÑËÍ´ï', finish_time = NOW() WHERE id = ?";
+        String sql = "UPDATE delivery_task SET status = 'å·²é€è¾¾', finish_time = NOW() WHERE id = ?";
 
         try (
                 Connection connection = DBUtil.getConnection();
@@ -90,7 +90,7 @@ public class DeliveryDao {
             ps.setInt(1, taskId);
             ps.executeUpdate();
         } catch (Exception e) {
-            logger.error("Íê³ÉÈÎÎñÊ§°Ü", e);
+            logger.error("å®Œæˆä»»åŠ¡å¤±è´¥", e);
         }
     }
 
@@ -106,7 +106,7 @@ public class DeliveryDao {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            logger.error("Í³¼ÆÅäËÍÈÎÎñÊ§°Ü", e);
+            logger.error("ç»Ÿè®¡é…é€ä»»åŠ¡å¤±è´¥", e);
         }
 
         return 0;

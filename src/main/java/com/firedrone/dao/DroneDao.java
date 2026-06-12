@@ -36,7 +36,7 @@ public class DroneDao {
                 list.add(drone);
             }
         } catch (Exception e) {
-            logger.error("Êı¾İ¿â²Ù×÷Ê§°Ü", e);
+            logger.error("æŸ¥è¯¢æ— äººæœºå¤±è´¥", e);
         }
 
         return list;
@@ -49,7 +49,7 @@ public class DroneDao {
                 WHERE status = 'ç©ºé—²'
                   AND battery >= 30
                   AND mask_capacity >= ?
-                ORDER BY 
+                ORDER BY
                     CASE WHEN area = ? THEN 0 ELSE 1 END,
                     battery DESC
                 LIMIT 1
@@ -77,7 +77,7 @@ public class DroneDao {
             }
 
         } catch (Exception e) {
-            logger.error("Êı¾İ¿â²Ù×÷Ê§°Ü", e);
+            logger.error("æŸ¥æ‰¾æœ€ä½³æ— äººæœºå¤±è´¥", e);
         }
 
         return null;
@@ -94,7 +94,7 @@ public class DroneDao {
             ps.setInt(2, droneId);
             ps.executeUpdate();
         } catch (Exception e) {
-            logger.error("Êı¾İ¿â²Ù×÷Ê§°Ü", e);
+            logger.error("æ›´æ–°æ— äººæœºçŠ¶æ€å¤±è´¥", e);
         }
     }
 
@@ -110,7 +110,7 @@ public class DroneDao {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            logger.error("Êı¾İ¿â²Ù×÷Ê§°Ü", e);
+            logger.error("ç»Ÿè®¡æ— äººæœºå¤±è´¥", e);
         }
 
         return 0;
