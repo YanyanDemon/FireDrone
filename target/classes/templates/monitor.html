@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head><title>火情监测</title></head>
+<body>
+<div layout:fragment="content">
+    <h2>火情监测</h2>
+
+    <!-- message -->
+    <p style="color:#60a5fa; font-weight: 500;" th:if="${msg}" th:text="${msg}"></p>
+
+    <!-- add form -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: var(--radius-sm); padding: 18px 22px; margin-bottom: 24px;">
+        <h3 style="margin:0 0 14px 0; font-size:15px; color:#f1f5f9;">+ 添加监测点</h3>
+        <form th:action="@{/monitor/add}" method="post" style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:11px; color:#64748b;">名称</label>
+                <input type="text" name="name" placeholder="监测点名称" required style="width:140px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:11px; color:#64748b;">区域</label>
+                <input type="text" name="area" placeholder="所属区域" required style="width:130px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:11px; color:#64748b;">温度(°C)</label>
+                <input type="number" name="temperature" value="0" step="0.1" style="width:80px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:11px; color:#64748b;">烟雾(ppm)</label>
+                <input type="number" name="smoke" value="0" step="0.1" style="width:80px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:11px; color:#64748b;">CO(ppm)</label>
+                <input type="number" name="co" value="0" step="0.1" style="width:80px;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:11px; color:#64748b;">火焰</label>
+                <select name="flame" style="width:90px;">
+                    <option value="0">无</option>
+                    <option value="1">检测到</option>
+                </select>
+            </div>
+            <button class="btn btn-blue" type="submit">添加</button>
+        </form>
+    </div>
+
+    <!-- table -->
+    <table>
+        <tr>
+            <th>ID</th><th>监测点</th><th>区域</th><th>温度</th><th>烟雾</th><th>CO</th><th>火焰</th><th>风险等级</th><th>操作</th>
+        </tr>
+        <tr th:each="p : ${monitorList}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.name}"></td>
+            <td th:text="${p.area}"></td>
+            <td th:text="${p.temperature}"></td>
+            <td th:text="${p.smoke}"></td>
+            <td th:text="${p.co}"></td>
+            <td><span th:text="${p.flame} == 1 ? '检测到' : '无'"></span></td>
+            <td>
+                <span class="badge"
+                      th:class="'badge ' + (${p.riskLevel} == '正常' ? 'badge-normal' : (${p.riskLevel} == '预警' ? 'badge-warning' : (${p.riskLevel} == '危险' ? 'badge-danger' : 'badge-urgent')))"
+                      th:text="${p.riskLevel}"></span>
+            </td>
+            <td>
+                <form th:action="@{/monitor}" method="post">
+                    <input type="hidden" name="id" th:value="${p.id}">
+                    <button class="btn" type="submit">智能判断</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(monitorList)}">
+            <td colspan="9" style="color:#64748b; padding:24px;">暂无监测点，请添加</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

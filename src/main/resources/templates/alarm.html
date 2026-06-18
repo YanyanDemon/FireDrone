@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head><title>告警管理</title></head>
+<body>
+<div layout:fragment="content">
+    <h2>告警列表</h2>
+    <p style="color:#f87171;" th:if="${msg}" th:text="${msg}"></p>
+    <table>
+        <tr>
+            <th>ID</th><th>监测点</th><th>等级</th><th>内容</th><th>状态</th><th>时间</th><th>派发防毒面具</th>
+        </tr>
+        <tr th:each="a : ${alarmList}">
+            <td th:text="${a.id}"></td>
+            <td th:text="${a.monitorPoint != null ? a.monitorPoint.name : '未知'}"></td>
+            <td>
+                <span class="badge"
+                      th:classappend="${a.level} == '预警' ? 'badge-warning' : (${a.level} == '危险' ? 'badge-danger' : 'badge-urgent')"
+                      th:text="${a.level}"></span>
+            </td>
+            <td th:text="${a.content}"></td>
+            <td th:text="${a.status}"></td>
+            <td th:text="${#temporals.format(a.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <form th:action="@{/alarm}" method="post">
+                    <input type="hidden" name="alarmId" th:value="${a.id}">
+                    <input type="text" name="targetArea" placeholder="目标区域" style="width:80px;">
+                    <input type="number" name="maskCount" value="5" min="1" style="width:60px;">
+                    <button class="btn btn-blue" type="submit">生成任务</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

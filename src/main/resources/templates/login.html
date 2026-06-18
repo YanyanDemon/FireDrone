@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火情智能监测系统登录</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-page">
+
+<div class="login-box">
+    <div class="login-logo">&#128752;</div>
+    <h2>火情智能监测与无人机配送系统</h2>
+    <p class="login-sub">FireDrone Intelligent Monitoring System</p>
+
+    <p style="color:#4ade80; font-size:14px; margin-bottom:12px;" th:if="${msg}" th:text="${msg}"></p>
+
+    <form th:action="@{/login}" method="post" autocomplete="off">
+        <input type="text" name="username" placeholder="请输入账号" autocomplete="off">
+        <input type="password" name="password" placeholder="请输入密码" autocomplete="new-password">
+        <button class="btn" type="submit" style="width: 100%;">登 录</button>
+    </form>
+
+    <p class="login-error" th:if="${param.error != null}" th:text="${msg}"></p>
+
+    <p style="margin-top:18px; font-size:13px; color:#64748b;">
+        没有账号？<a th:href="@{/register}" style="color:#60a5fa; text-decoration:none;">立即注册 →</a>
+    </p>
+</div>
+
+</body>
+</html>

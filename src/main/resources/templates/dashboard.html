@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>指挥中心</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <!-- welcome banner -->
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <h2>
+                <span sec:authorize="hasRole('ADMIN')">&#128736; 管理员指挥中心</span>
+                <span sec:authorize="!hasRole('ADMIN')">&#128064; 操作员工作台</span>
+            </h2>
+            <p class="welcome-sub">
+                欢迎回来，<strong sec:authentication="name">admin</strong>
+                <span class="role-tag">
+                    <span sec:authorize="hasRole('ADMIN')">管理员</span>
+                    <span sec:authorize="!hasRole('ADMIN')">操作员</span>
+                </span>
+            </p>
+        </div>
+        <div class="welcome-status">
+            <span class="status-dot"></span> 系统运行中
+        </div>
+    </div>
+
+    <!-- toast -->
+    <div class="toast" th:if="${msg}" th:text="${msg}"></div>
+
+    <!-- stat cards: 2 per row -->
+    <div class="stats-grid">
+
+        <!-- card 1: monitor points -->
+        <a class="stat-card stat-card-red" th:href="@{/monitor}">
+            <div class="sc-top">
+                <div class="sc-icon">&#128293;</div>
+                <div class="sc-head">
+                    <div class="sc-label">监测点</div>
+                    <div class="sc-value" th:text="${monitorCount}">0</div>
+                </div>
+                <div class="sc-badges">
+                    <span class="mini-badge mini-urgent" th:if="${monitorUrgent} > 0" th:text="${monitorUrgent} + ' 紧急'"></span>
+                    <span class="mini-badge mini-danger" th:if="${monitorDanger} > 0" th:text="${monitorDanger} + ' 危险'"></span>
+                </div>
+            </div>
+            <div class="sc-items">
+                <div class="sc-item monitor-item" th:each="m : ${monitorList}">
+                    <div class="mi-left">
+                        <span class="mi-name" th:text="${m.name}" th:title="${m.name}"></span>
+                        <span class="mi-area" th:text="${m.area}"></span>
+                    </div>
+                    <div class="mi-sensors">
+                        <span class="sensor-val" th:class="'sensor-val ' + (${m.temperature gt 60} ? 'sensor-red' : (${m.temperature gt 45} ? 'sensor-yellow' : 'sensor-green'))"
+                              th:text="${m.temperature} + '°'" title="温度"></span>
+                        <span class="sensor-val" th:class="'sensor-val ' + (${m.smoke gt 600} ? 'sensor-red' : (${m.smoke gt 300} ? 'sensor-yellow' : 'sensor-green'))"
+                              th:text="${m.smoke}" title="烟雾 ppm"></span>
+                        <span class="sensor-val" th:class="'sensor-val ' + (${m.co gt 150} ? 'sensor-red' : (${m.co gt 80} ? 'sensor-yellow' : 'sensor-green'))"
+                              th:text="${m.co}" title="CO ppm"></span>
+                        <span class="sensor-dot" th:class="${m.flame eq 1} ? 'sensor-dot flame-on' : 'sensor-dot flame-off'"
+                              th:title="${m.flame eq 1} ? '检测到火焰' : '无火焰'"></span>
+                    </div>
+                    <span class="risk-pill" th:class="'risk-' + ${m.riskLevel}" th:text="${m.riskLevel}"></span>
+                </div>
+            </div>
+            <div class="sc-footer">
+                <span class="footer-icon">&#9888;</span>
+                <span class="footer-text">阈值：温度 >45° ｜ 烟雾 >300 ｜ CO >80 ｜ 火焰检测</span>
+            </div>
+        </a>
+
+        <!-- card 2: alarms -->
+        <a class="stat-card stat-card-orange" th:href="@{/alarm}">
+            <div class="sc-top">
+                <div class="sc-icon">&#128680;</div>
+                <div class="sc-head">
+                    <div class="sc-label">告警</div>
+                    <div class="sc-value" th:text="${alarmCount}">0</div>
+                </div>
+                <div class="sc-badges" th:if="${alarmUnprocessed} > 0">
+                    <span class="mini-badge mini-urgent" th:text="${alarmUnprocessed} + ' 未处理'"></span>
+                </div>
+            </div>
+            <div class="sc-items">
+                <div class="sc-item alarm-item" th:each="a : ${alarmList}">
+                    <span class="alarm-mp" th:text="${a.monitorName}" th:title="${a.monitorName}"></span>
+                    <span class="risk-pill" th:class="'risk-' + ${a.level}" th:text="${a.level}"></span>
+                    <span class="alarm-status" th:class="${a.status eq '未处理'} ? 'alarm-status status-active' : 'alarm-status'" th:text="${a.status}"></span>
+                    <span class="alarm-time" th:if="${a.createTime != null}" th:text="${#temporals.format(a.createTime, 'MM-dd HH:mm')}"></span>
+                    <span class="alarm-time" th:unless="${a.createTime != null}">--</span>
+                </div>
+            </div>
+            <div class="sc-footer" th:class="${alarmUnprocessed} > 0 ? 'sc-footer footer-alert' : 'sc-footer footer-ok'">
+                <span class="footer-icon" th:text="${alarmUnprocessed} > 0 ? '&#9200;' : '&#10003;'"></span>
+                <span class="footer-text">
+                    <span th:if="${alarmUnprocessed} > 0">未处理告警：<span th:text="${alarmUnprocessed}"></span> 条 — 请及时响应</span>
+                    <span th:unless="${alarmUnprocessed} > 0">全部告警已处理</span>
+                </span>
+            </div>
+        </a>
+
+        <!-- card 3: drones (admin only) -->
+        <a class="stat-card stat-card-blue" sec:authorize="hasRole('ADMIN')" th:href="@{/drone}">
+            <div class="sc-top">
+                <div class="sc-icon">&#128752;</div>
+                <div class="sc-head">
+                    <div class="sc-label">无人机</div>
+                    <div class="sc-value" th:text="${droneCount}">0</div>
+                </div>
+                <div class="sc-badges" th:if="${droneLowBattery} > 0">
+                    <span class="mini-badge mini-urgent" th:text="${droneLowBattery} + ' 低电量'"></span>
+                </div>
+            </div>
+            <div class="sc-items">
+                <div class="sc-item drone-item" th:each="d : ${droneList}">
+                    <div class="di-left">
+                        <span class="di-name" th:text="${d.name}" th:title="${d.name}"></span>
+                        <span class="di-area" th:text="${d.area}"></span>
+                    </div>
+                    <div class="di-battery-wrap">
+                        <div class="di-battery-bar" th:class="${d.battery lt 20} ? 'di-battery-bar battery-low' : (${d.battery lt 50} ? 'di-battery-bar battery-mid' : 'di-battery-bar battery-ok')"
+                             th:style="'width:' + ${d.battery} + '%'"></div>
+                        <span class="di-battery-text" th:text="${d.battery} + '%'"></span>
+                    </div>
+                    <span class="drone-status-tag" th:class="${d.status eq '空闲'} ? 'drone-status-tag ds-idle' : (${d.status eq '任务中'} ? 'drone-status-tag ds-mission' : 'drone-status-tag ds-other')" th:text="${d.status}"></span>
+                    <span class="di-capacity" th:text="'&#128230;' + ${d.maskCapacity}"></span>
+                </div>
+            </div>
+            <div class="sc-footer" th:class="${droneLowBattery} > 0 ? 'sc-footer footer-alert' : 'sc-footer footer-ok'">
+                <span class="footer-icon" th:text="${droneLowBattery} > 0 ? '&#9889;' : '&#10003;'"></span>
+                <span class="footer-text">
+                    <span th:if="${droneLowBattery} > 0">低电量 &lt;20%：<span th:text="${droneLowBattery}"></span> 架需充电</span>
+                    <span th:unless="${droneLowBattery} > 0">全部电量充足</span>
+                </span>
+            </div>
+        </a>
+
+        <!-- card 4: delivery tasks -->
+        <a class="stat-card stat-card-green" th:href="@{/delivery}">
+            <div class="sc-top">
+                <div class="sc-icon">&#128230;</div>
+                <div class="sc-head">
+                    <div class="sc-label">配送任务</div>
+                    <div class="sc-value" th:text="${taskCount}">0</div>
+                </div>
+                <div class="sc-badges" th:if="${taskCount} > 0">
+                    <span class="mini-badge mini-ok" th:text="${taskCount > 0 ? (taskDelivered * 100 / taskCount) + '% 已送达' : ''}"></span>
+                </div>
+            </div>
+            <div class="sc-items">
+                <div class="sc-item task-item" th:each="t : ${taskList}">
+                    <div class="ti-left">
+                        <span class="ti-area" th:text="'&#128205; ' + ${t.targetArea}" th:title="${t.targetArea}"></span>
+                        <span class="ti-drone" th:text="'&#128752; ' + ${t.droneName}"></span>
+                    </div>
+                    <span class="ti-masks" th:text="'&#128230; ×' + ${t.maskCount}"></span>
+                    <span class="task-status-dot" th:class="${t.status eq '已送达'} ? 'task-status-dot ts-done' : (${t.status eq '配送中'} ? 'task-status-dot ts-going' : 'task-status-dot ts-wait')"></span>
+                    <span class="ti-status-text" th:text="${t.status}"></span>
+                </div>
+            </div>
+            <div class="sc-footer" th:class="${taskDelivered} > 0 ? 'sc-footer footer-ok' : 'sc-footer'">
+                <span class="footer-icon">&#128200;</span>
+                <span class="footer-text" th:if="${taskCount} > 0">
+                    已送达 <span th:text="${taskDelivered}"></span> &nbsp;|&nbsp; 配送中 <span th:text="${taskDelivering}"></span> &nbsp;|&nbsp; 完成率 <span th:text="${taskDelivered * 100 / taskCount}"></span>%
+                </span>
+                <span class="footer-text" th:unless="${taskCount} > 0">暂无配送记录</span>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- overview -->
+    <div class="system-overview">
+        <div class="overview-grid">
+            <div class="overview-card">
+                <div class="ov-num" th:text="${monitorNormal}">0</div>
+                <div class="ov-label">正常监测点</div>
+            </div>
+            <div class="overview-card">
+                <div class="ov-num" th:text="${alarmUnprocessed}">0</div>
+                <div class="ov-label">待处理告警</div>
+            </div>
+            <div class="overview-card">
+                <div class="ov-num" th:text="${droneIdle}">0</div>
+                <div class="ov-label">空闲无人机</div>
+            </div>
+            <div class="overview-card">
+                <div class="ov-num" th:text="${taskDelivering}">0</div>
+                <div class="ov-label">配送中任务</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

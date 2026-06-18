@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head><title>配送任务</title></head>
+<body>
+<div layout:fragment="content">
+    <h2>配送任务列表</h2>
+    <table>
+        <tr>
+            <th>ID</th><th>告警ID</th><th>无人机</th><th>目标区域</th><th>面具数量</th><th>状态</th><th>创建时间</th><th>完成时间</th><th>操作</th>
+        </tr>
+        <tr th:each="t : ${taskList}">
+            <td th:text="${t.id}"></td>
+            <td th:text="${t.alarmId}"></td>
+            <td th:text="${t.drone != null ? t.drone.name : '未知'}"></td>
+            <td th:text="${t.targetArea}"></td>
+            <td th:text="${t.maskCount}"></td>
+            <td th:text="${t.status}"></td>
+            <td th:text="${#temporals.format(t.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <span th:if="${t.finishTime != null}" th:text="${#temporals.format(t.finishTime, 'yyyy-MM-dd HH:mm')}"></span>
+                <span th:unless="${t.finishTime != null}">-</span>
+            </td>
+            <td>
+                <form th:if="${t.status != '已送达'}" th:action="@{/delivery}" method="post">
+                    <input type="hidden" name="taskId" th:value="${t.id}">
+                    <button class="btn" type="submit">确认送达</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

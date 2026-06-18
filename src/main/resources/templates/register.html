@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册账号</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-page">
+
+<div class="login-box" style="padding: 36px 38px;">
+    <div class="login-logo">&#128752;</div>
+    <h2>注册新账号</h2>
+    <p class="login-sub">Create Account</p>
+
+    <form th:action="@{/register}" method="post" autocomplete="off">
+        <input type="text" name="username" placeholder="请输入账号（2-20位）" autocomplete="off">
+        <input type="password" name="password" placeholder="请输入密码（至少6位）" autocomplete="new-password">
+        <input type="password" name="confirm" placeholder="请再次输入密码" autocomplete="new-password">
+        <select name="role" id="roleSelect">
+            <option value="操作员">操作员</option>
+            <option value="管理员">管理员</option>
+        </select>
+        <input type="text" name="invite" id="inviteInput" placeholder="管理员邀请码" autocomplete="off" style="display:none;">
+        <button class="btn btn-blue" type="submit" style="width:100%;">注 册</button>
+    </form>
+
+    <p class="login-error" th:text="${msg}"></p>
+
+    <p style="margin-top:16px; font-size:13px; color:#64748b;">
+        已有账号？<a th:href="@{/login}" style="color:#60a5fa; text-decoration:none;">去登录 →</a>
+    </p>
+</div>
+
+<script>
+    document.getElementById('roleSelect').addEventListener('change', function () {
+        document.getElementById('inviteInput').style.display = this.value === '管理员' ? 'block' : 'none';
+    });
+</script>
+
+</body>
+</html>
